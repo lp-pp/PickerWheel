@@ -8,15 +8,11 @@ import com.lp.pickerwheel.model.DistrictModel;
 import com.lp.pickerwheel.model.ProvinceModel;
 import com.lp.pickerwheel.service.XmlparseHandler;
 
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -37,11 +33,11 @@ public class BaseActivity extends AppCompatActivity {
     /*
     *key - 市 value - 区
     */
-    protected Map<String, String[]> mCityDatasMap = new HashMap<String, String[]>();
+    protected Map<String, String[]> mDistrictDatasMap = new HashMap<String, String[]>();
     /*
     *key - 区 value - 邮编
      */
-    protected Map<String, String[]> mDistrictDatasMap = new HashMap<String, String[]>();
+    protected Map<String, String[]> mZipcodeDatasMap = new HashMap<String, String[]>();
     //当前省的名称
     protected String mCurrentProvinceName = "";
     //当前市的名称
@@ -80,6 +76,31 @@ public class BaseActivity extends AppCompatActivity {
                 }
             }
             mProvinceDatas = new String[provinceList.size()];
+            for (int i = 0; i < provinceList.size(); i++) {
+                // 遍历所有省的数据
+                mProvinceDatas[i] = provinceList.get(i).getName();
+                List<CityModel> cityList = provinceList.get(i).getCityList();
+                String[] cityName = new String[cityList.size()];
+                for (int j = 0; j < cityList.size(); j++) {
+                    // 遍历省下面的所有市的数据
+                    cityName[j] = cityList.get(j).getName();
+                    List<DistrictModel> districtList = cityList.get(j).getDistrictList();
+                    String[] districtNameArray = new String[districtList.size()];
+                    DistrictModel[] districtArray = new DistrictModel[districtList.size()];
+                    for (int k = 0; k < districtList.size(); k++) {
+                        // 遍历市下面所有区/县的数据
+                        DistrictModel districtModel = new DistrictModel(districtList.get(k).getName(), districtList.get(k).getZipCode());
+                        // 区/县对于的邮编，保存到mZipcodeDatasMap
+                        mDistrictDatasMap.put(districtList.get(k).getName(), districtList.get(k).getZipCode());
+                        districtArray[k] = districtModel;
+                        districtNameArray[k] = districtModel.getName();
+                    }
+                    // 市-区/县的数据，保存到mDistrictDatasMap
+                    mDistrictDatasMap.put(cityName[j], districtNameArray);
+                }
+                // 省-市的数据，保存到mCitisDatasMap
+                mCityDatasMap.put(mProvinceDatas[i], cityName);
+            }
 
         } catch (Throwable e) {
             e.printStackTrace();
