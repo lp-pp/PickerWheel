@@ -7,8 +7,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
-public class MainActivity extends BaseActivity {
+import kankan.wheel.widget.OnWheelChangedListener;
+import kankan.wheel.widget.WheelView;
+
+public class MainActivity extends BaseActivity implements View.OnClickListener, OnWheelChangedListener{
+    private WheelView mViewProvince;
+    private WheelView mViewCity;
+    private WheelView mViewDistrict;
+    private Button mBtnConfirm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +33,38 @@ public class MainActivity extends BaseActivity {
                         .setAction("Action", null).show();
             }
         });
+        setUpViews();
+        setUpListener();
+        setUpData();
+    }
 
+    public void setUpViews(){
+        mViewProvince = (WheelView) findViewById(R.id.id_province);
+        mViewCity = (WheelView) findViewById(R.id.id_city);
+        mViewDistrict = (WheelView) findViewById(R.id.id_district);
+        mBtnConfirm = (Button) findViewById(R.id.btn_confirm);
+    }
+
+    public void setUpListener(){
+        // 添加change事件
+        mViewProvince.addChangingListener(this);
+        mViewCity.addChangingListener(this);
+        mViewDistrict.addChangingListener(this);
+        // 添加onclick事件
+        mBtnConfirm.setOnClickListener(this);
+    }
+
+    public void setUpData(){
+        initProvinceDatas();
+    }
+
+    @Override
+    public void onChanged(WheelView wheel, int oldValue, int newValue) {
+
+    }
+
+    @Override
+    public void onClick(View v) {
 
     }
 
