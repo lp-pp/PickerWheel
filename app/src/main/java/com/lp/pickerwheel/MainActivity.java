@@ -8,9 +8,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import kankan.wheel.widget.OnWheelChangedListener;
 import kankan.wheel.widget.WheelView;
+import kankan.wheel.widget.adapters.ArrayWheelAdapter;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, OnWheelChangedListener{
     private WheelView mViewProvince;
@@ -56,16 +58,70 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     public void setUpData(){
         initProvinceDatas();
+        mViewProvince.setViewAdapter(new ArrayWheelAdapter<String>(MainActivity.this, mProvinceDatas));
+        mViewProvince.setVisibleItems(7);
+        mViewCity.setVisibleItems(7);
+        mViewDistrict.setVisibleItems(7);
+        updataCities();
+        updataAreas();
+    }
+
+    /*
+    根据当前的省，更新市WheelView的信息
+     */
+    public void updataCities(){
+        int mCurrentPro = mViewProvince.getCurrentItem();
+        mCurrentProvinceName = mProvinceDatas[mCurrentPro];
+        String[] cities = mCityDatasMap.get(mCurrentProvinceName);
+        if (cities == null){
+            cities = new String[]{""};
+        }
+        mViewCity.setViewAdapter(new ArrayWheelAdapter<String>(MainActivity.this, cities));
+        mViewCity.setCurrentItem(0);
+        updataAreas();
+    }
+
+    /*
+    根据当前的市，更新区WheelView的信息
+     */
+    public void updataAreas(){
+        int mCurrentCity = mViewCity.getCurrentItem();
+        mCurrentCityName = mCityDatasMap.get(mCurrentProvinceName)[mCurrentCity];
+        String[] areas = mDistrictDatasMap.get(mCurrentCityName);
+        if (areas == null){
+            areas = new String[]{""};
+        }
+        mViewDistrict.setViewAdapter(new ArrayWheelAdapter<String>(MainActivity.this, areas));
+        mViewDistrict.setCurrentItem(0);
     }
 
     @Override
     public void onChanged(WheelView wheel, int oldValue, int newValue) {
+        if (wheel == mViewProvince){
+            updataCities();
+        } else if (wheel == mViewCity){
+            updataAreas();
+        } else if (wheel == mViewDistrict){
+            mCurrentDistrictName = mDistrictDatasMap.get(mCurrentCityName)[newValue];
+            mCurrentZipCode = mZipcodeDatasMap.get(mCurrentDistrictName);
+        }
 
     }
 
     @Override
     public void onClick(View v) {
-
+        switch (v.getId()) {
+            case R.id.btn_confirm:
+                ShowSelectResult();
+                break;
+            default:
+                break;
+        }
+    }
+    
+    public void ShowSelectResult(){
+        Toast.makeText(MainActivity.this, "当前选中的：" + mCurrentProvinceName + "," + mCurrentCityName +
+                "," + mCurrentDistrictName + "," + mCurrentZipCode, Toast.LENGTH_SHORT).show();
     }
 
     @Override

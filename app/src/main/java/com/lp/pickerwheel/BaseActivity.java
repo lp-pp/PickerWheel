@@ -37,7 +37,7 @@ public class BaseActivity extends AppCompatActivity {
     /*
     *key - 区 value - 邮编
      */
-    protected Map<String, String[]> mZipcodeDatasMap = new HashMap<String, String[]>();
+    protected Map<String, String> mZipcodeDatasMap = new HashMap<String, String>();
     //当前省的名称
     protected String mCurrentProvinceName = "";
     //当前市的名称
@@ -91,7 +91,7 @@ public class BaseActivity extends AppCompatActivity {
                         // 遍历市下面所有区/县的数据
                         DistrictModel districtModel = new DistrictModel(districtList.get(k).getName(), districtList.get(k).getZipCode());
                         // 区/县对于的邮编，保存到mZipcodeDatasMap
-                        mDistrictDatasMap.put(districtList.get(k).getName(), districtList.get(k).getZipCode());
+                        mZipcodeDatasMap.put(districtList.get(k).getName(), districtList.get(k).getZipCode());
                         districtArray[k] = districtModel;
                         districtNameArray[k] = districtModel.getName();
                     }
