@@ -10,7 +10,7 @@ public class ProvinceModel {
     private String name;
     private List<CityModel> cityList;
 
-    public provinceModel(){
+    public ProvinceModel(){
         super();
     }
 
